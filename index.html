@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!--reset stylesheet-->
+<link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+
+<!--stylesheet-->
+<link rel="stylesheet" type="text/css" href="assets/css/style.css">
+<link rel="stylesheet" type="text/javascript" href="assets/javascript/main.js">
+
+
+<!--meta info for responsiveness-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!--bootstrap-->
+
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+
+<head>
+    <meta charset="utf-8">
+    <title>Holiday Gifs </title>
+
+</head>
+
+<body>
+<!-- Heading-->
+    <div class="container">
+        <div id="heading">
+            <h1> H O L I D A Y S</h1>
+        </div>
+        <!--Put buttons here for each initial array of holidays-->
+        <div id="holiday-view"></div>
+
+
+        <form id="holiday-form">
+            <!--<label for="holiday-input"><h3>Add Another Holiday</h3></label>_-->
+            <input type="text" id="holiday-input" placeholder="  Add Holiday">
+
+
+            <!-- Button triggers new holiday to be added -->
+            <input id="add-holiday" type="submit" value="Add Holiday to see Gifs">
+        </form>
+
+        <div id="gifs-appear-here">
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            var holidays = [
+                    "Halloween",
+                    "Dia De Los Muertos",
+                    "Thanksgiving Day",
+                    "Christmas",
+                    "New Year's Day",
+                    "Indigenous Day",
+                    "Easter",
+                    "Mother's Day",
+                    "Cinco De Mayo",
+                    "Memorial Day",
+                    "Veterans Day",
+                    "St Patrick's Day",
+                    "President's Day",
+                    "Martin Luther King Jr",
+                    "Labor Day",
+                    "Groundhog Day",
+                    "Good Friday",
+                    "Mardi Gras",
+                    "Father's Day",
+        ];
+        $(document).ready(function () {
+        function renderButtons() {
+          $("#holiday-view").empty();
+          for (var i = 0; i < holidays.length; i++) {
+            var gifButton = $("<button>");
+            gifButton.addClass("holiday");
+            gifButton.attr("data-name", holidays[i]);
+            gifButton.text(holidays[i])
+            $("#holiday-view").append(gifButton);
+          }
+        };
+
+        renderButtons();
+        //when user clicks on the holiday button with a specific data-name generate gifs from the giphy site
+        $(document).on("click", ".holiday", function () {
+          //Look for this attribute
+          var holiday = $(this).attr("data-name");
+          console.log(holiday);
+          //URL for the database to query
+          var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+            holiday + "&api_key=eWbUtUxw04kH1Zn4SkZ2Gt6w27GaV0Fq&limit=10"
+          $.ajax({
+              url: queryURL,
+              method: "GET"
+            })
+            .done(function (response) {
+              var results = response.data;
+              console.log(response);
+              for (var i = 0; i < results.length; i++) {
+                var gifDiv = $("<div class='holidayDiv'>");
+                var rating = results[i].rating;
+                var imageRating = $("<p>").text("Rating: " + rating);
+                var holidayImage = $("<img>");
+                // $(selector).attr(attribute,value)
+                holidayImage.attr("class", "gif");
+                //set data-state to still by default
+                holidayImage.attr("data-state", "still");
+                holidayImage.attr("src", results[i].images.fixed_height_still.url);
+                holidayImage.attr("data-animate", results[i].images.fixed_height.url);
+                holidayImage.attr("data-still", results[i].images.fixed_height_still.url);
+                gifDiv.prepend(imageRating);
+                gifDiv.prepend(holidayImage);
+                $("#gifs-appear-here").prepend(gifDiv);
+              }
+            });
+        });
+
+        // This function handles events where the add holiday button is clicked
+        $("#add-holiday").on("click", function (event) {
+
+          event.preventDefault();
+          // grab the text the user types into the input field
+          // add the new holiday into the holidays array
+          var holiday = $("#holiday-input").val().trim();
+          //The holiday is then added to the array
+          holidays.push(holiday)
+          // Call renderButtons function i
+          renderButtons();
+        });
+
+        $(document).on("click", ".gif", function () {
+          // Make a variable named state and then store the image's data-state into it. 
+          // Use the .attr() method for this.
+          var state = $(this).attr("data-state");
+          console.log(state);
+
+          // Check if the variable state is equal to 'still',
+          // then update the src attribute of this image to it's data-animate value, and update the data-state attribute to 'animate'.
+          // If state is equal to 'animate', then update the src attribute of this
+          // image to it's data-still value and update the data-state attribute to 'still'
+
+          if (state === "still") {
+            var animateURL = $(this).attr("data-animate");
+            $(this).attr("src", animateURL);
+            $(this).attr("data-state", "animate");
+          } else {
+            var stillURL = $(this).attr("data-still");
+            $(this).attr("src", stillURL);
+            $(this).attr("data-state", "still");
+          }
+        });
+        $(document).on("click", "button", function () {
+          var backgroundImage = []
+        })
+      });
+        </script>
+    </div>
+</body>
+
+</html>
