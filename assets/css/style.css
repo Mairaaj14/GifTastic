@@ -1,0 +1,15 @@
+.container {
+    background-image: url("../images/background.jpg");
+    
+    height: 100%;
+    width: 100%;
+
+}
+
+#heading {
+    color: azure;
+
+}
+#gifs-appear-here {
+    margin: 20px;
+}
